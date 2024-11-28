@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 import os
 
 # Función para solicitar valores con opción de usar valores predeterminados
@@ -27,26 +28,41 @@ v_fuente_pasos = int(solicitar_valor("Ingrese el número de pasos para la veloci
 v_fuente = np.linspace(v_fuente_min, v_fuente_max, v_fuente_pasos)
 
 # Calcular la frecuencia observada para cada velocidad de la fuente
-f_observada = []
-for v_s in v_fuente:
-    # Efecto Doppler: Frecuencia observada
-    f = f_inicial * ((v_onda + v_observador) / (v_onda - v_s))
-    f_observada.append(f)
+f_observada = f_inicial * ((v_onda + v_observador) / (v_onda - v_fuente))
 
-# Crear la gráfica
-plt.figure(figsize=(10, 6))
-plt.plot(v_fuente, f_observada, label="Frecuencia observada")
-plt.axhline(f_inicial, color="red", linestyle="--", label="Frecuencia inicial")
-plt.title("Efecto Doppler: Frecuencia Observada vs Velocidad de la Fuente")
-plt.xlabel("Velocidad de la Fuente (m/s)")
-plt.ylabel("Frecuencia Observada (Hz)")
-plt.legend()
-plt.grid()
+# Configurar la animación
+fig, ax = plt.subplots(figsize=(10, 6))
+line, = ax.plot([], [], label="Frecuencia observada", lw=2)
+ax.axhline(f_inicial, color="red", linestyle="--", label="Frecuencia inicial")
+ax.set_xlim(v_fuente_min, v_fuente_max)
+ax.set_ylim(min(f_observada) * 0.9, max(f_observada) * 1.1)
+ax.set_title("Efecto Doppler: Evolución de la Frecuencia Observada")
+ax.set_xlabel("Velocidad de la Fuente (m/s)")
+ax.set_ylabel("Frecuencia Observada (Hz)")
+ax.legend()
+ax.grid()
 
-# Guardar la gráfica en un archivo PNG
-output_dir = "output_images"
-os.makedirs(output_dir, exist_ok=True)  # Crear directorio si no existe
-file_name = os.path.join(output_dir, f"doppler_f_{f_inicial}_v_{v_onda}_steps_{v_fuente_pasos}.png")
-plt.savefig(file_name)
+# Función de inicialización para la animación
+def init():
+    line.set_data([], [])
+    return line,
 
-print(f"Gráfica guardada como: {file_name}")
+# Función de actualización para la animación
+def update(frame):
+    line.set_data(v_fuente[:frame], f_observada[:frame])
+    return line,
+
+# Crear la animación
+ani = animation.FuncAnimation(
+    fig, update, frames=len(v_fuente), init_func=init, blit=True, repeat=False
+)
+
+# Guardar la animación como archivo MP4 o mostrarla
+output_dir = "output_videos"
+os.makedirs(output_dir, exist_ok=True)
+file_name = os.path.join(output_dir, f"doppler_anim_f_{f_inicial}_v_{v_onda}.mp4")
+ani.save(file_name.replace('.mp4', '.gif'), fps=10, writer='pillow')
+
+print(f"Animación guardada como: {file_name}")
+
+plt.show()
