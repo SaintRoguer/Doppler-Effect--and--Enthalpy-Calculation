@@ -1,18 +1,32 @@
 # Tabla de entalpías de formación estándar en kJ/mol
 entalpias_formacion = {
-    "H2O (l)": -285.83,
-    "CO2 (g)": -393.52,
-    "CH4 (g)": -74.87,
-    "O2 (g)": 0.00,
-    "H2 (g)": 0.00,
-    "N2 (g)": 0.00,
-    "NH3 (g)": -45.94
+    "H2O (l)": {"valor": -285.83, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
+    "CO2 (g)": {"valor": -393.52, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
+    "CH4 (g)": {"valor": -74.87, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
+    "O2 (g)": {"valor": 0.00, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
+    "H2 (g)": {"valor": 0.00, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
+    "N2 (g)": {"valor": 0.00, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
+    "NH3 (g)": {"valor": -45.94, "ref": "Chemical Principles, 7th Ed., Zumdahl"}
 }
 
 def calcular_delta_h(reaccion):
-    """Calcula el cambio de entalpía basado en la reacción proporcionada."""
-    delta_h_productos = sum(entalpias_formacion[compuesto] * coef for compuesto, coef in reaccion['productos'])
-    delta_h_reactivos = sum(entalpias_formacion[compuesto] * coef for compuesto, coef in reaccion['reactivos'])
+    """
+    Calcula el cambio de entalpía basado en la reacción proporcionada.
+    
+    Args:
+        reaccion (dict): Diccionario con las claves 'productos' y 'reactivos',
+                        cada uno conteniendo una lista de tuplas (compuesto, coeficiente)
+    
+    Returns:
+        float: Cambio de entalpía en kJ
+    
+    Raises:
+        KeyError: Si algún compuesto no está en la base de datos
+    """
+    delta_h_productos = sum(entalpias_formacion[compuesto]["valor"] * coef 
+                          for compuesto, coef in reaccion['productos'])
+    delta_h_reactivos = sum(entalpias_formacion[compuesto]["valor"] * coef 
+                           for compuesto, coef in reaccion['reactivos'])
     return delta_h_productos - delta_h_reactivos
 
 def calcular_delta_u(delta_h, delta_n_gases, temperatura=298):
@@ -43,11 +57,30 @@ def ingresar_reaccion():
     delta_n_gases = int(input("Cambio en el número de moles de gases (\u0394n_gases): "))
     return {"reactivos": reactivos, "productos": productos, "delta_n_gases": delta_n_gases}
 
+def mostrar_ecuacion_quimica(reaccion):
+    """
+    Muestra la ecuación química balanceada.
+    
+    Args:
+        reaccion (dict): Diccionario con la información de la reacción
+    """
+    # Formatear reactivos
+    reactivos_str = " + ".join(f"{coef if coef != 1 else ''}{compuesto}" 
+                              for compuesto, coef in reaccion['reactivos'])
+    # Formatear productos
+    productos_str = " + ".join(f"{coef if coef != 1 else ''}{compuesto}" 
+                              for compuesto, coef in reaccion['productos'])
+    print(f"\nEcuación química balanceada:")
+    print(f"{reactivos_str} → {productos_str}")
+
 def main():
-    print("Cálculo de entalpía y energía interna de una reacción química")
+    print("="*60)
+    print("Cálculo de Parámetros Termodinámicos de Reacciones Químicas")
+    print("="*60)
+    
     print("Compuestos disponibles:")
     for compuesto, entalpia in entalpias_formacion.items():
-        print(f"{compuesto}: {entalpia} kJ/mol")
+        print(f"{compuesto}: {entalpia['valor']} kJ/mol (Referencia: {entalpia['ref']})")
     
     opcion = input("\n¿Desea usar compuestos tabulados (1) o ingresar sus propios valores (2)? ").strip()
     
@@ -65,11 +98,21 @@ def main():
         return
     
     try:
+        mostrar_ecuacion_quimica(reaccion)
         delta_h = calcular_delta_h(reaccion)
         delta_u = calcular_delta_u(delta_h, reaccion["delta_n_gases"])
-        print(f"\nResultados:")
-        print(f"  \u0394H (cambio de entalpía): {delta_h:.2f} kJ")
-        print(f"  \u0394U (cambio de energía interna): {delta_u:.2f} kJ")
+        
+        print("\nResultados:")
+        print("-"*30)
+        print(f"ΔH (cambio de entalpía): {delta_h:.2f} kJ")
+        print(f"ΔU (cambio de energía interna): {delta_u:.2f} kJ")
+        
+        # Agregar interpretación del resultado
+        if delta_h < 0:
+            print("\nLa reacción es exotérmica (libera energía al entorno)")
+        else:
+            print("\nLa reacción es endotérmica (absorbe energía del entorno)")
+            
     except KeyError as e:
         print(f"Error: Compuesto no encontrado en la tabla: {e}")
     except Exception as e:
