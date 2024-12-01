@@ -8,8 +8,51 @@ entalpias_formacion = {
     "O2 (g)": {"valor": 0.00, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
     "H2 (g)": {"valor": 0.00, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
     "N2 (g)": {"valor": 0.00, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
-    "NH3 (g)": {"valor": -45.94, "ref": "Chemical Principles, 7th Ed., Zumdahl"}
+    "NH3 (g)": {"valor": -45.94, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
+    "C2H5OH (l)": {"valor": -277.0, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
+    "CaCO3 (s)": {"valor": -1207.0, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
+    "CaO (s)": {"valor": -635.0, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
+    "HCl (aq)": {"valor": -167.2, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
+    "NaOH (aq)": {"valor": -469.6, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
+    "NaCl (aq)": {"valor": -407.1, "ref": "Chemical Principles, 7th Ed., Zumdahl"}
 }
+
+reaccion_hidrogeno = {
+    "reactivos": [("H2 (g)", 2), ("O2 (g)", 1)],
+    "productos": [("H2O (l)", 2)],
+    "delta_n_gases": -1  # 3 moles de gases reactivos → 0 moles de gases productos
+}
+
+reaccion_amoniaco = {
+    "reactivos": [("N2 (g)", 1), ("H2 (g)", 3)],
+    "productos": [("NH3 (g)", 2)],
+    "delta_n_gases": -2  # 4 moles de gases reactivos → 2 moles de gases productos
+}
+
+reaccion_electrolisis = {
+    "reactivos": [("H2O (l)", 2)],
+    "productos": [("H2 (g)", 2), ("O2 (g)", 1)],
+    "delta_n_gases": +3  # 0 moles de gases reactivos → 3 moles de gases productos
+}
+
+reaccion_etanol = {
+    "reactivos": [("C2H5OH (l)", 1), ("O2 (g)", 3)],
+    "productos": [("CO2 (g)", 2), ("H2O (l)", 3)],
+    "delta_n_gases": -2  # 3 moles de gases reactivos → 1 mol de gas productos
+}
+
+reaccion_ca_co3 = {
+    "reactivos": [("CaCO3 (s)", 1)],
+    "productos": [("CaO (s)", 1), ("CO2 (g)", 1)],
+    "delta_n_gases": +1  # 0 moles de gases reactivos → 1 mol de gas productos
+}
+
+reaccion_neutralizacion = {
+    "reactivos": [("HCl (aq)", 1), ("NaOH (aq)", 1)],
+    "productos": [("H2O (l)", 1), ("NaCl (aq)", 1)],
+    "delta_n_gases": 0  # No hay gases involucrados
+}
+
 
 def calcular_delta_h(reaccion):
     """
@@ -118,17 +161,69 @@ def main():
     opcion = input("\n¿Desea usar compuestos tabulados (1) o ingresar sus propios valores (2)? ").strip()
     
     if opcion == "1":
-        # Ejemplo de reacción: Combustión de metano
-        reaccion = {
-            "reactivos": [("CH4 (g)", 1), ("O2 (g)", 2)],
-            "productos": [("CO2 (g)", 1), ("H2O (l)", 2)],
-            "delta_n_gases": -2  # 3 moles de gases reactivos -> 1 mol de gas producto
-        }
+        print("\nSeleccione una reacción :")
+        print("1. Combustión de metano (CH4 + O2 → CO2 + H2O)")
+        print("2. Combustión de hidrógeno (H2 + O2 → H2O)")
+        print("3. Síntesis de amoníaco (N2 + H2 → NH3)")
+        print("4. Electrólisis del agua (H2O → H2 + O2)")
+        print("5. Combustión del etanol (C2H5OH + O2 → CO2 + H2O)")
+        print("6. Descomposición de CaCO3 (CaCO3 → CaO + CO2)")
+        print("7. Neutralización de HCl con NaOH (HCl + NaOH → H2O + NaCl)")
+        
+        seleccion = input("Ingrese el número de la reacción deseada: ").strip()
+        
+        if seleccion == "1":
+            reaccion = {
+                "reactivos": [("CH4 (g)", 1), ("O2 (g)", 2)],
+                "productos": [("CO2 (g)", 1), ("H2O (l)", 2)],
+                "delta_n_gases": -2
+            }
+        elif seleccion == "2":
+            reaccion = {
+                "reactivos": [("H2 (g)", 2), ("O2 (g)", 1)],
+                "productos": [("H2O (l)", 2)],
+                "delta_n_gases": -1
+            }
+        elif seleccion == "3":
+            reaccion = {
+                "reactivos": [("N2 (g)", 1), ("H2 (g)", 3)],
+                "productos": [("NH3 (g)", 2)],
+                "delta_n_gases": -2
+            }
+        elif seleccion == "4":
+            reaccion = {
+                "reactivos": [("H2O (l)", 2)],
+                "productos": [("H2 (g)", 2), ("O2 (g)", 1)],
+                "delta_n_gases": +3
+            }
+        elif seleccion == "5":
+            reaccion = {
+                "reactivos": [("C2H5OH (l)", 1), ("O2 (g)", 3)],
+                "productos": [("CO2 (g)", 2), ("H2O (l)", 3)],
+                "delta_n_gases": -2
+            }
+        elif seleccion == "6":
+            reaccion = {
+                "reactivos": [("CaCO3 (s)", 1)],
+                "productos": [("CaO (s)", 1), ("CO2 (g)", 1)],
+                "delta_n_gases": +1
+            }
+        elif seleccion == "7":
+            reaccion = {
+                "reactivos": [("HCl (aq)", 1), ("NaOH (aq)", 1)],
+                "productos": [("H2O (l)", 1), ("NaCl (aq)", 1)],
+                "delta_n_gases": 0
+            }
+        else:
+            print("Selección inválida. Saliendo del programa.")
+            return
+
     elif opcion == "2":
         reaccion = ingresar_reaccion()
     else:
         print("Opción inválida. Saliendo del programa.")
         return
+
     
     try:
         mostrar_ecuacion_quimica(reaccion)
