@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+
 # Tabla de entalpías de formación estándar en kJ/mol
 entalpias_formacion = {
     "H2O (l)": {"valor": -285.83, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
@@ -73,6 +75,37 @@ def mostrar_ecuacion_quimica(reaccion):
     print(f"\nEcuación química balanceada:")
     print(f"{reactivos_str} → {productos_str}")
 
+# Función para graficar el diagrama de entalpía
+def graficar_diagrama_entalpia(delta_h, reaccion):
+    entalpia_reactivos = sum(coef * entalpias_formacion[compuesto]["valor"] for compuesto, coef in reaccion["reactivos"])
+    entalpia_productos = sum(coef * entalpias_formacion[compuesto]["valor"] for compuesto, coef in reaccion["productos"])
+
+    niveles = [entalpia_reactivos, entalpia_productos]
+    etiquetas = ["Reactivos", "Productos"]
+    
+    plt.figure(figsize=(8, 6))
+    plt.plot([0, 1], niveles, marker='o', color='blue', linestyle='--')
+    
+    plt.annotate(f"ΔH = {delta_h:.2f} kJ", 
+                 xy=(0.5, (entalpia_reactivos + entalpia_productos) / 2), 
+                 xytext=(0.5, (entalpia_reactivos + entalpia_productos) / 2 + 50),
+                 arrowprops=dict(facecolor='black', arrowstyle='->'),
+                 ha='center')
+    
+    plt.text(0, entalpia_reactivos + 10, f"{entalpia_reactivos:.2f} kJ", ha='center')
+    plt.text(1, entalpia_productos + 10, f"{entalpia_productos:.2f} kJ", ha='center')
+
+    plt.xticks([0, 1], etiquetas)
+    plt.ylabel("Entalpía (kJ/mol)")
+    plt.title("Diagrama de Entalpía de la Reacción")
+    plt.grid(True, linestyle='--', alpha=0.6)
+    
+    tipo_reaccion = "Exotérmica" if delta_h < 0 else "Endotérmica"
+    plt.figtext(0.5, 0.02, f"Reacción {tipo_reaccion}", ha="center", fontsize=10, color='red')
+    
+    plt.show()
+
+
 def main():
     print("="*60)
     print("Cálculo de Parámetros Termodinámicos de Reacciones Químicas")
@@ -112,6 +145,8 @@ def main():
             print("\nLa reacción es exotérmica (libera energía al entorno)")
         else:
             print("\nLa reacción es endotérmica (absorbe energía del entorno)")
+         # Llamar al diagrama de entalpía
+        graficar_diagrama_entalpia(delta_h, reaccion)
             
     except KeyError as e:
         print(f"Error: Compuesto no encontrado en la tabla: {e}")
