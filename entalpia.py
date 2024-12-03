@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
 
 # Tabla de entalpías de formación estándar en kJ/mol
 entalpias_formacion = {
@@ -15,6 +17,12 @@ entalpias_formacion = {
     "HCl (aq)": {"valor": -167.2, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
     "NaOH (aq)": {"valor": -469.6, "ref": "Chemical Principles, 7th Ed., Zumdahl"},
     "NaCl (aq)": {"valor": -407.1, "ref": "Chemical Principles, 7th Ed., Zumdahl"}
+}
+
+reaccion_metano = {
+    "reactivos": [("CH4 (g)", 1), ("O2 (g)", 2)],
+    "productos": [("CO2 (g)", 1), ("H2O (l)", 2)],
+    "delta_n_gases": -2  # 3 moles de gases reactivos → 3 moles de gases productos
 }
 
 reaccion_hidrogeno = {
@@ -173,47 +181,19 @@ def main():
         seleccion = input("Ingrese el número de la reacción deseada: ").strip()
         
         if seleccion == "1":
-            reaccion = {
-                "reactivos": [("CH4 (g)", 1), ("O2 (g)", 2)],
-                "productos": [("CO2 (g)", 1), ("H2O (l)", 2)],
-                "delta_n_gases": -2
-            }
+            reaccion = reaccion_metano
         elif seleccion == "2":
-            reaccion = {
-                "reactivos": [("H2 (g)", 2), ("O2 (g)", 1)],
-                "productos": [("H2O (l)", 2)],
-                "delta_n_gases": -1
-            }
+            reaccion = reaccion_hidrogeno
         elif seleccion == "3":
-            reaccion = {
-                "reactivos": [("N2 (g)", 1), ("H2 (g)", 3)],
-                "productos": [("NH3 (g)", 2)],
-                "delta_n_gases": -2
-            }
+            reaccion = reaccion_amoniaco
         elif seleccion == "4":
-            reaccion = {
-                "reactivos": [("H2O (l)", 2)],
-                "productos": [("H2 (g)", 2), ("O2 (g)", 1)],
-                "delta_n_gases": +3
-            }
+            reaccion = reaccion_electrolisis
         elif seleccion == "5":
-            reaccion = {
-                "reactivos": [("C2H5OH (l)", 1), ("O2 (g)", 3)],
-                "productos": [("CO2 (g)", 2), ("H2O (l)", 3)],
-                "delta_n_gases": -2
-            }
+            reaccion = reaccion_etanol
         elif seleccion == "6":
-            reaccion = {
-                "reactivos": [("CaCO3 (s)", 1)],
-                "productos": [("CaO (s)", 1), ("CO2 (g)", 1)],
-                "delta_n_gases": +1
-            }
+            reaccion = reaccion_ca_co3
         elif seleccion == "7":
-            reaccion = {
-                "reactivos": [("HCl (aq)", 1), ("NaOH (aq)", 1)],
-                "productos": [("H2O (l)", 1), ("NaCl (aq)", 1)],
-                "delta_n_gases": 0
-            }
+            reaccion = reaccion_neutralizacion
         else:
             print("Selección inválida. Saliendo del programa.")
             return
