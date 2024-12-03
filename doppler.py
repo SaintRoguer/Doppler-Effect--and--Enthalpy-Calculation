@@ -50,11 +50,9 @@ COLORS = {
     'background': '#f0f0f0'   # Gris claro para fondos
 }
 
-# Crear una figura con dos subplots
-fig = plt.figure(figsize=(16, 12))
-gs = fig.add_gridspec(2, 1, height_ratios=[1.2, 1], hspace=0.4)
-ax1 = fig.add_subplot(gs[0])  # Gráfica estática
-ax2 = fig.add_subplot(gs[1])  # Animación
+# Crear una figura con un solo subplot
+fig = plt.figure(figsize=(16, 8))  # Ajustar el tamaño de la figura
+ax1 = fig.add_subplot(111)  # Solo un subplot para la gráfica estática
 
 # Gráfica estática (superior)
 ax1.plot(v_fuente, f_observada, label="Frecuencia observada", linewidth=3, color=COLORS['primary'])
@@ -84,19 +82,6 @@ ax1.annotate(f'Frecuencia inicial: {f_inicial} Hz\nVelocidad del sonido: {v_onda
 freq_point, = ax1.plot([], [], 'ro', markersize=10, label='Frecuencia actual')
 ax1.legend(loc='upper right', fontsize=10, framealpha=0.9)
 
-# Configurar la animación (inferior)
-x = np.linspace(-10, 10, 1000)
-line, = ax2.plot([], [], lw=2)
-source_point, = ax2.plot([], [], 'ro', markersize=10, label='Fuente')
-
-# Configurar los límites de la animación
-ax2.set_xlim(-10, 10)
-ax2.set_ylim(-2, 2)
-ax2.set_title('Simulación de Propagación de Ondas', fontsize=14, weight='bold')
-ax2.set_xlabel('Distancia (m)', fontsize=12, weight='bold')
-ax2.set_ylabel('Amplitud', fontsize=12, weight='bold')
-ax2.grid(True)
-
 # Añadir un panel de información más profesional
 info_text = (
     f"Parámetros del sistema:\n"
@@ -108,14 +93,12 @@ info_text = (
 fig.text(0.02, 0.02, info_text, fontsize=10, 
          bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
 
-# Función de inicialización para la animación
+# Modificar la función de inicialización para la animación
 def init():
-    line.set_data([], [])
-    source_point.set_data([], [])
     freq_point.set_data([], [])
-    return line, source_point, freq_point
+    return freq_point,  # Devuelve solo el punto móvil
 
-# Función de actualización para la animación
+# Modificar la función de actualización para la animación
 def update(frame):
     t = frame * 0.1
     
@@ -128,17 +111,12 @@ def update(frame):
     # Calcular la frecuencia observada actual
     current_freq = f_inicial * ((v_onda + v_observador) / (v_onda - current_velocity))
     
-    # Generar la onda
-    wave = np.sin(2 * np.pi * (f_inicial * t - (x - source_pos)))
-    
-    # Actualizar la línea y los puntos
-    line.set_data(x, wave)
-    source_point.set_data([source_pos], [0])
+    # Actualizar el punto móvil en la gráfica superior
     freq_point.set_data([current_velocity], [current_freq])
     
-    return line, source_point, freq_point
+    return freq_point,  # Devuelve solo el punto móvil
 
-# Crear la animación
+# Crear la animación solo para el punto móvil
 ani = FuncAnimation(fig, update, init_func=init, frames=200,
                    interval=50, blit=True)
 
